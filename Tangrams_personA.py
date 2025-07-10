@@ -3,13 +3,13 @@ import os, random, csv, time
 ##Tangrams code for BBI Project 6/30/2025
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Participant ID': '', 'Folder Order (comma-separated)': 'Asame,Adiff,Bsame,Bdiff'}
+info = {'Participant ID': '', 'Run Order (comma-separated)': 'W,Z,L'}
 dlg = gui.DlgFromDict(info)
 if not dlg.OK:
     core.quit()
 
 participant_id = info['Participant ID']
-custom_folder_order = [folder.strip() for folder in info['Folder Order (comma-separated)'].split(',')]
+custom_folder_order = [folder.strip() for folder in info['Run Order (comma-separated)'].split(',')]
 
 ## For Saving file path and data(not sure if this is working yet)
 save_path = f"data/{participant_id}"
