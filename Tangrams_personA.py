@@ -3,13 +3,21 @@ import os, random, csv, time
 ##Tangrams code for BBI Project 6/30/2025
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Participant ID': '', 'Run Order (comma-separated)': 'W,Z,L'}
+info = {'Participant ID': '', 'Run Order (comma-separated)': 'W,L,Z'}
 dlg = gui.DlgFromDict(info)
 if not dlg.OK:
     core.quit()
 
+code_interpreter = {'W': 'easyA,hardA', 'X': 'easyA,hardB', 'Y': 'easyB,hardA', 'Z': 'easyB,hardB', 
+                    'L': 'novelA,novelC', 'M': 'novelA,novelD', 'N': 'novelB,novelC', 'O': 'novelB,novelD'}
+
 participant_id = info['Participant ID']
-custom_folder_order = [folder.strip() for folder in info['Run Order (comma-separated)'].split(',')]
+custom_folder_order = []
+for c in info['Run Order (comma-separated)'].split(',') :
+    code = [i for i in c.split(',')]
+    for j in code :
+        print(j, code_interpreter[j])
+        [custom_folder_order.append(k) for k in code_interpreter[j].split(',')]
 
 ## For Saving file path and data(not sure if this is working yet)
 save_path = f"data/{participant_id}"
@@ -35,7 +43,7 @@ rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='whi
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300))
 
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
-base_dir = '/Users/dscn/Desktop/Tangrams'
+base_dir = '\\Users\\mizwa\\Desktop\\BBI Tangrams\\Tangrams_images'
 control_folder = 'Control'
 
 all_images = {}
@@ -94,6 +102,7 @@ def show_rest_video():
 
 def select_images(folder, num=6):
     available = list(set(all_images[folder]) - set(used_images))
+    print(available)
     if len(available) < num:
         raise ValueError(f"Not enough unique images remaining in folder {folder}")
     selected = random.sample(available, num)
