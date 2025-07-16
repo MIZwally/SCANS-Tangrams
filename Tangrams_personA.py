@@ -1,5 +1,5 @@
 from psychopy import visual, core, event, gui
-import os, random, csv, time
+import os, random, csv, time, math
 ##Tangrams code for BBI Project 6/30/2025
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
@@ -10,6 +10,9 @@ if not dlg.OK:
 
 code_interpreter = {'W': 'easyA,hardA', 'X': 'easyA,hardB', 'Y': 'easyB,hardA', 'Z': 'easyB,hardB', 
                     'L': 'novelA,novelC', 'M': 'novelA,novelD', 'N': 'novelB,novelC', 'O': 'novelB,novelD'}
+
+trial_folders = ['easyA', 'hardA', 'easyB', 'hardB']
+control_folders = ['novelA', 'novelB', 'novelC', 'novelD']
 
 participant_id = info['Participant ID']
 custom_folder_order = []
@@ -58,12 +61,6 @@ for folder in custom_folder_order:
     else:
         all_images[folder] = []
 
-control_images_pool = [
-    os.path.join(base_dir, control_folder, f)
-    for f in os.listdir(os.path.join(base_dir, control_folder))
-    if f.endswith(('.jpg', '.png'))
-]
-
 used_images = []
 
 def log_response(participant, block, folder, role, images, selections, rt, status="completed"):
@@ -108,9 +105,6 @@ def select_images(folder, num=6):
     selected = random.sample(available, num)
     used_images.extend(selected)
     return selected
-
-def select_control_images(num=6):
-    return random.sample(control_images_pool, num)
 
 def show_instructions(role):
     check_escape()
@@ -213,27 +207,25 @@ def control_block(images, role, block_num):
 
 ## Loop for task (might need editing for rest video)
 role = 'guessor'
-block_count = 8
+block_count = 12
+block_num = 0
 
-for block_num in range(1, block_count + 1):
+while block_num < block_count :
+    block_num += 1
+    
+    folder_index = int(math.ceil(block_num / 2)) - 1
     check_escape()
-    folder_index = (block_num - 1) // 2
-    folder = custom_folder_order[folder_index % len(custom_folder_order)]
+    folder = custom_folder_order[folder_index]
 
     show_fixation()
-    if block_num in [4, 7]:
-        show_rest_video()
 
     show_instructions(role)
     images = select_images(folder, 6)
-
+    # add if control block change instructions??
     if role == 'guessor':
         guessor_block(images, block_num, folder)
     else:
         director_block(images, block_num, folder)
-
-    control_imgs = select_control_images(6)
-    control_block(control_imgs, role, block_num)
 
     role = 'director' if role == 'guessor' else 'guessor'
 
