@@ -76,6 +76,12 @@ def check_escape():
         win.close()
         core.quit()
 
+def check_escape2(key):
+    if key == 'escape':
+        log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
+        win.close()
+        core.quit()
+
 def wait_for_space():
     while True:
         keys = event.getKeys(keyList=['space', 'escape'])
@@ -179,8 +185,8 @@ def guessor_block(images, block_num, folder):
 
         keys = event.getKeys()
         for key in keys:
-            check_escape()
-            if key == 'return':
+            check_escape2(key)
+            if key == 'return' and ((time.time() - start_time) < 105) :
                 responses = [box.text for box in input_boxes]
                 rt = round(time.time() - start_time, 3)
                 log_response(participant_id, block_num, folder, 'guessor', images, responses, rt)
@@ -226,7 +232,6 @@ while block_num < block_count :
     show_fixation()
 
     ctrl = False
-    print(folder, control_folders)
     if folder in control_folders :
         ctrl = True
     
