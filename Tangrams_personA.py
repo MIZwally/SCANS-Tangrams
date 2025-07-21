@@ -36,14 +36,14 @@ with open(csv_file, 'w', newline='') as f:
     writer.writerow(csv_headers)
 
 ## Window set up(change window size based on computer used)
-win = visual.Window(size=(1500, 850), fullscr=False, color='black', units='pix')
+win = visual.Window(size=(1500, 850), fullscr=False, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
 ## Instruction section change for if needed
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='white')
-instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300))
+instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
 
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
 base_dir = '\\Users\\mizwa\\Desktop\\BBI Tangrams\\Tangrams_images'
@@ -106,10 +106,15 @@ def select_images(folder, num=6):
     used_images.extend(selected)
     return selected
 
-def show_instructions(role):
+def show_instructions(role, control):
+    if control :
+        control_instructions = 'SOLO'
+    else :
+        control_instructions = 'TOGETHER'
     check_escape()
     if role == 'guessor':
         instruction = (
+            f"{control_instructions} \n\n"
             "You are the GUESSOR.\n\n"
             "The director will describe one of the images.\n"
             "Click a box (A–F) to type your guess.\n"
@@ -118,6 +123,7 @@ def show_instructions(role):
         )
     else:
         instruction = (
+            f"{control_instructions} \n\n"
             "You are the DIRECTOR.\n\n"
             "You will see one image at a time.\n"
             "Describe each image to the guessor.\n\n"
@@ -219,7 +225,12 @@ while block_num < block_count :
 
     show_fixation()
 
-    show_instructions(role)
+    ctrl = False
+    print(folder, control_folders)
+    if folder in control_folders :
+        ctrl = True
+    
+    show_instructions(role, ctrl)
     images = select_images(folder, 6)
     # add if control block change instructions??
     if role == 'guessor':
