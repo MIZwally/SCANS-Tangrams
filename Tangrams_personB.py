@@ -1,5 +1,5 @@
 from psychopy import visual, core, event, gui
-import os, random, csv, time
+import os, random, csv, time, math
 ##Tangrams code for BBI Project 6/30/2025 PERSON B (Director first)
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Participant ID': '', 'Run Order (comma-separated)': 'W,L,Z'}
@@ -9,6 +9,9 @@ if not dlg.OK:
 
 code_interpreter = {'W': 'easyA,hardA', 'X': 'easyA,hardB', 'Y': 'easyB,hardA', 'Z': 'easyB,hardB', 
                     'L': 'novelA,novelC', 'M': 'novelA,novelD', 'N': 'novelB,novelC', 'O': 'novelB,novelD'}
+
+trial_folders = ['easyA', 'hardA', 'easyB', 'hardB']
+control_folders = ['novelA', 'novelB', 'novelC', 'novelD']
 
 participant_id = info['Participant ID']
 custom_folder_order = []
@@ -33,14 +36,14 @@ with open(csv_file, 'w', newline='') as f:
     writer.writerow(csv_headers)
 
 ## Window set up(change window size based on computer used)
-win = visual.Window(size=(1400, 800), fullscr=False, color='black', units='pix')
+win = visual.Window(size=(1500, 850), fullscr=False, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
 ## Instruction section change for if needed
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='white')
-instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300))
+instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
 
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
 base_dir = '\\Users\\mizwa\\Desktop\\BBI Tangrams\\Tangrams_images'
@@ -58,12 +61,6 @@ for folder in custom_folder_order:
     else:
         all_images[folder] = []
 
-control_images_pool = [
-    os.path.join(base_dir, control_folder, f)
-    for f in os.listdir(os.path.join(base_dir, control_folder))
-    if f.endswith(('.jpg', '.png'))
-]
-
 used_images = []
 
 def log_response(participant, block, folder, role, images, selections, rt, status="completed"):
@@ -78,7 +75,13 @@ def check_escape():
         log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
         win.close()
         core.quit()
-
+        
+def check_escape2(key):
+    if key == 'escape':
+        log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
+        win.close()
+        core.quit()
+        
 def wait_for_space():
     while True:
         keys = event.getKeys(keyList=['space', 'escape'])
@@ -108,13 +111,15 @@ def select_images(folder, num=6):
     used_images.extend(selected)
     return selected
 
-def select_control_images(num=6):
-    return random.sample(control_images_pool, num)
-
-def show_instructions(role):
+def show_instructions(role, control):
+    if control :
+        control_instructions = 'SOLO'
+    else :
+        control_instructions = 'TOGETHER'
     check_escape()
     if role == 'guessor':
         instruction = (
+            f"{control_instructions} \n\n"
             "You are the GUESSOR.\n\n"
             "The director will describe one of the images.\n"
             "Click a box (A–F) to type your guess.\n"
@@ -123,6 +128,7 @@ def show_instructions(role):
         )
     else:
         instruction = (
+            f"{control_instructions} \n\n"
             "You are the DIRECTOR.\n\n"
             "You will see one image at a time.\n"
             "Describe each image to the guessor.\n\n"
@@ -132,7 +138,7 @@ def show_instructions(role):
     instruction_text.draw()
     win.flip()
     wait_for_space()
-
+    
 def guessor_block(images, block_num, folder):
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -50), (0, -50), (400, -50)]
     image_stims = [visual.ImageStim(win, image=img, pos=pos, size=(250, 250))
@@ -178,8 +184,8 @@ def guessor_block(images, block_num, folder):
 
         keys = event.getKeys()
         for key in keys:
-            check_escape()
-            if key == 'return':
+            check_escape2(key)
+            if key == 'return' and ((time.time() - start_time) < 105) :
                 responses = [box.text for box in input_boxes]
                 rt = round(time.time() - start_time, 3)
                 log_response(participant_id, block_num, folder, 'guessor', images, responses, rt)
@@ -212,30 +218,32 @@ def control_block(images, role, block_num):
 
 ## Loop for task (might need editing for rest video)
 role = 'director'
-block_count = 8
+block_count = 12
+block_num = 0
 
-for block_num in range(1, block_count + 1):
+while block_num < block_count :
+    block_num += 1
+    
+    folder_index = int(math.ceil(block_num / 2)) - 1
     check_escape()
-    folder_index = (block_num - 1) // 2
-    folder = custom_folder_order[folder_index % len(custom_folder_order)]
+    folder = custom_folder_order[folder_index]
 
     show_fixation()
-    if block_num in [4, 7]:
-        show_rest_video()
 
-    show_instructions(role)
+    ctrl = False
+    if folder in control_folders :
+        ctrl = True
+    
+    show_instructions(role, ctrl)
     images = select_images(folder, 6)
-
+    # add if control block change instructions??
     if role == 'guessor':
         guessor_block(images, block_num, folder)
     else:
         director_block(images, block_num, folder)
 
-    control_imgs = select_control_images(6)
-    control_block(control_imgs, role, block_num)
-
     role = 'director' if role == 'guessor' else 'guessor'
-
+    
 ## For the end of the task
 thanks.draw()
 win.flip()
