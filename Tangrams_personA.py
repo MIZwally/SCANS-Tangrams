@@ -1,10 +1,10 @@
 from psychopy import visual, core, event, gui
 import os, random, csv, time, math
-##Tangrams code for BBI Project 6/30/2025
+##Tangrams code for SCANS Project 6/30/2025
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID:': '', 'Participant ID': '', 'Run Order': 'KWN'}
-dlg = gui.DlgFromDict(info)
+info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '1', 'Run Order': 'KWN'}
+dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
 
@@ -14,7 +14,7 @@ code_interpreter = {'K': 'easyA,hardA', 'L': 'easyA,hardB', 'M': 'easyB,hardA', 
 trial_folders = ['easyA', 'hardA', 'easyB', 'hardB']
 control_folders = ['controlA', 'controlB', 'controlC', 'controlD']
 
-participant_id = info['Participant ID']
+participant_id = info['Subject ID']
 custom_folder_order = []
 if len(info['Run Order']) != 3 :
     raise ValueError('Invalid run order; run order must be 3 letters')
@@ -22,7 +22,6 @@ for code in info['Run Order'] :
     code = code.capitalize()
     if code not in code_interpreter.keys() :
         raise ValueError(f'{code} is not a valid run code')
-    print(code, code_interpreter[code])
     [custom_folder_order.append(k) for k in code_interpreter[code].split(',')]
 
 ## For Saving file path and data(not sure if this is working yet)
@@ -220,7 +219,10 @@ def control_block(images, role, block_num):
         director_block(images, f"{block_num}_control", 'control')
 
 ## Loop for task (might need editing for rest video)
-role = 'guessor'
+if info['Participant #'] == '1' :
+    role = 'director'
+elif info['Participant #'] == '2' :
+    role = 'guessor'
 block_count = 12
 block_num = 0
 
