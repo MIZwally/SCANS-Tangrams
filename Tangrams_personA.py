@@ -3,24 +3,27 @@ import os, random, csv, time, math
 ##Tangrams code for BBI Project 6/30/2025
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Participant ID': '', 'Run Order (comma-separated)': 'W,L,Z'}
+info = {'Dyad ID:': '', 'Participant ID': '', 'Run Order': 'KWN'}
 dlg = gui.DlgFromDict(info)
 if not dlg.OK:
     core.quit()
 
-code_interpreter = {'W': 'easyA,hardA', 'X': 'easyA,hardB', 'Y': 'easyB,hardA', 'Z': 'easyB,hardB', 
-                    'L': 'novelA,novelC', 'M': 'novelA,novelD', 'N': 'novelB,novelC', 'O': 'novelB,novelD'}
+code_interpreter = {'K': 'easyA,hardA', 'L': 'easyA,hardB', 'M': 'easyB,hardA', 'N': 'easyB,hardB', 
+                    'W': 'controlA,controlC', 'X': 'controlA,controlD', 'Y': 'controlB,controlC', 'Z': 'controlB,controlD'}
 
 trial_folders = ['easyA', 'hardA', 'easyB', 'hardB']
-control_folders = ['novelA', 'novelB', 'novelC', 'novelD']
+control_folders = ['controlA', 'controlB', 'controlC', 'controlD']
 
 participant_id = info['Participant ID']
 custom_folder_order = []
-for c in info['Run Order (comma-separated)'].split(',') :
-    code = [i for i in c.split(',')]
-    for j in code :
-        print(j, code_interpreter[j])
-        [custom_folder_order.append(k) for k in code_interpreter[j].split(',')]
+if len(info['Run Order']) != 3 :
+    raise ValueError('Invalid run order; run order must be 3 letters')
+for code in info['Run Order'] :
+    code = code.capitalize()
+    if code not in code_interpreter.keys() :
+        raise ValueError(f'{code} is not a valid run code')
+    print(code, code_interpreter[code])
+    [custom_folder_order.append(k) for k in code_interpreter[code].split(',')]
 
 ## For Saving file path and data(not sure if this is working yet)
 save_path = f"data/{participant_id}"
@@ -46,8 +49,7 @@ rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='whi
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
 
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
-base_dir = '\\Users\\mizwa\\Desktop\\BBI Tangrams\\Tangrams_images'
-control_folder = 'Control'
+base_dir = '\\Users\\mizwa\\Desktop\\SCANS Tangrams\\Tangrams_images'
 
 all_images = {}
 for folder in custom_folder_order:
@@ -232,6 +234,7 @@ while block_num < block_count :
     show_fixation()
 
     ctrl = False
+    print(folder)
     if folder in control_folders :
         ctrl = True
     
@@ -239,9 +242,9 @@ while block_num < block_count :
     images = select_images(folder, 6)
     # add if control block change instructions??
     if role == 'guessor':
-        guessor_block(images, block_num, folder)
+        guessor_block(images, block_num, ctrl)
     else:
-        director_block(images, block_num, folder)
+        director_block(images, block_num, ctrl)
 
     role = 'director' if role == 'guessor' else 'guessor'
 
