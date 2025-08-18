@@ -1,6 +1,72 @@
 from psychopy import visual, core, event, gui
 import os, random, csv, time, math
 ##Tangrams code for SCANS Project 6/30/2025
+from psychopy import visual, event
+
+# Set up the PsychoPy window
+win = visual.Window([800, 600], color="white", units="pix")
+
+instruction = visual.TextStim(win, text="Select a condition from the dropdown:", pos=(0, 250))
+
+# Dropdown options and the button
+dropdown_rect = visual.Rect(win, width=300, height=50, pos=(0, 100), fillColor="lightgray", lineColor="black") # type: ignore
+dropdown_text = visual.TextStim(win, text="Condition A", pos=(0, 100))
+
+# List of options for the dropdown
+options = ['Condition A', 'Condition B', 'Condition C']
+option_rects = []
+option_texts = []
+
+# Create visual elements for each option below the button
+for i, option in enumerate(options):
+    option_rects.append(visual.Rect(win, width=300, height=50, pos=(0, 100 - (i + 1) * 55), fillColor="lightgray", lineColor="black")) # type: ignore
+    option_texts.append(visual.TextStim(win, text=option, pos=(0, 100 - (i + 1) * 55)))
+
+# Track whether the dropdown is open or closed
+dropdown_open = False
+current_option_index = 0
+
+# Set up mouse input
+mouse = event.Mouse(win=win)
+
+# Experiment loop
+while True:
+    # Draw the instructions
+    instruction.draw()
+    
+    # Draw the dropdown button
+    dropdown_rect.draw()
+    dropdown_text.draw()
+
+    # If the dropdown is open, draw the options
+    if dropdown_open:
+        for rect, text in zip(option_rects, option_texts):
+            rect.draw()
+            text.draw()
+
+    # Check for mouse clicks on the dropdown button
+    if mouse.isPressedIn(dropdown_rect) and not dropdown_open:
+        dropdown_open = True  # Open the dropdown menu
+
+    # Check for mouse clicks on any option
+    for i, rect in enumerate(option_rects):
+        if mouse.isPressedIn(rect):
+            dropdown_text.setText(options[i])  # Update the text to the selected option
+            dropdown_open = False  # Close the dropdown menu after selection
+
+    # Check for quitting the experiment (press 'q')
+    if 'q' in event.getKeys():
+        break
+
+    # Update the window
+    win.flip()
+
+# Close the window after the loop ends
+win.close()
+
+
+
+
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '1', 'Run Order': 'KWN'}
@@ -23,6 +89,9 @@ for code in info['Run Order'] :
     if code not in code_interpreter.keys() :
         raise ValueError(f'{code} is not a valid run code')
     [custom_folder_order.append(k) for k in code_interpreter[code].split(',')]
+
+if info['Participant #'] != '1' and info['Participant #'] != '2' :
+    raise ValueError('Participant # must be either 1 or 2')
 
 ## For Saving file path and data(not sure if this is working yet)
 save_path = f"data/{participant_id}"
@@ -210,13 +279,6 @@ def director_block(images, block_num, folder):
 
     rt = 120.0
     log_response(participant_id, block_num, folder, 'director', images, [], rt)
-
-def control_block(images, role, block_num):
-    check_escape()
-    if role == 'guessor':
-        guessor_block(images, f"{block_num}_control", 'control')
-    else:
-        director_block(images, f"{block_num}_control", 'control')
 
 ## Loop for task (might need editing for rest video)
 if info['Participant #'] == '1' :
