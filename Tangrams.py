@@ -1,6 +1,9 @@
 from psychopy import visual, core, event, gui
 import os, random, csv, time, math
+from pylsl import StreamInfo, StreamOutlet
+
 ##Tangrams code for SCANS Project 6/30/2025
+'''
 from psychopy import visual, event
 
 # Set up the PsychoPy window
@@ -64,9 +67,11 @@ while True:
 # Close the window after the loop ends
 win.close()
 
+'''
 
 
-
+info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
+outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '1', 'Run Order': 'KWN'}
@@ -115,13 +120,15 @@ fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='white')
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-
+outlet.push_sample(x=[0])
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
-base_dir = '\\Users\\mizwa\\Desktop\\SCANS Tangrams\\Tangrams_images'
+#base_dir = '\\Users\\mizwa\\Desktop\\SCANS Tangrams\\Tangrams_images'
+base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/Tangrams_images'
 
 all_images = {}
 for folder in custom_folder_order:
     full_path = os.path.join(base_dir, folder)
+    print(full_path)
     if os.path.exists(full_path):
         all_images[folder] = [
             os.path.join(full_path, f)
@@ -175,7 +182,7 @@ def show_rest_video():
 
 def select_images(folder, num=6):
     available = list(set(all_images[folder]) - set(used_images))
-    print(available)
+    print(folder)
     if len(available) < num:
         raise ValueError(f"Not enough unique images remaining in folder {folder}")
     selected = random.sample(available, num)
@@ -211,6 +218,7 @@ def show_instructions(role, control):
     wait_for_space()
 
 def guessor_block(images, block_num, folder):
+    outlet.push_sample(x=[1])
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -50), (0, -50), (400, -50)]
     image_stims = [visual.ImageStim(win, image=img, pos=pos, size=(250, 250))
                    for img, pos in zip(images, positions)]
@@ -268,6 +276,7 @@ def guessor_block(images, block_num, folder):
                     input_boxes[active_box_index].text += key
 
 def director_block(images, block_num, folder):
+    outlet.push_sample(x=[2])
     for img_path in images:
         stim = visual.ImageStim(win, image=img_path, size=(600, 600))
         stim.draw()
@@ -314,6 +323,7 @@ while block_num < block_count :
 
 ## For the end of the task
 thanks.draw()
+outlet.push_sample(x=[0])
 win.flip()
 core.wait(5)
 win.close()
