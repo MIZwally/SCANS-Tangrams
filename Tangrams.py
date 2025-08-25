@@ -1,73 +1,9 @@
 from psychopy import visual, core, event, gui
 import os, random, csv, time, math
 from pylsl import StreamInfo, StreamOutlet
+from sys import platform
 
 ##Tangrams code for SCANS Project 6/30/2025
-'''
-from psychopy import visual, event
-
-# Set up the PsychoPy window
-win = visual.Window([800, 600], color="white", units="pix")
-
-instruction = visual.TextStim(win, text="Select a condition from the dropdown:", pos=(0, 250))
-
-# Dropdown options and the button
-dropdown_rect = visual.Rect(win, width=300, height=50, pos=(0, 100), fillColor="lightgray", lineColor="black") # type: ignore
-dropdown_text = visual.TextStim(win, text="Condition A", pos=(0, 100))
-
-# List of options for the dropdown
-options = ['Condition A', 'Condition B', 'Condition C']
-option_rects = []
-option_texts = []
-
-# Create visual elements for each option below the button
-for i, option in enumerate(options):
-    option_rects.append(visual.Rect(win, width=300, height=50, pos=(0, 100 - (i + 1) * 55), fillColor="lightgray", lineColor="black")) # type: ignore
-    option_texts.append(visual.TextStim(win, text=option, pos=(0, 100 - (i + 1) * 55)))
-
-# Track whether the dropdown is open or closed
-dropdown_open = False
-current_option_index = 0
-
-# Set up mouse input
-mouse = event.Mouse(win=win)
-
-# Experiment loop
-while True:
-    # Draw the instructions
-    instruction.draw()
-    
-    # Draw the dropdown button
-    dropdown_rect.draw()
-    dropdown_text.draw()
-
-    # If the dropdown is open, draw the options
-    if dropdown_open:
-        for rect, text in zip(option_rects, option_texts):
-            rect.draw()
-            text.draw()
-
-    # Check for mouse clicks on the dropdown button
-    if mouse.isPressedIn(dropdown_rect) and not dropdown_open:
-        dropdown_open = True  # Open the dropdown menu
-
-    # Check for mouse clicks on any option
-    for i, rect in enumerate(option_rects):
-        if mouse.isPressedIn(rect):
-            dropdown_text.setText(options[i])  # Update the text to the selected option
-            dropdown_open = False  # Close the dropdown menu after selection
-
-    # Check for quitting the experiment (press 'q')
-    if 'q' in event.getKeys():
-        break
-
-    # Update the window
-    win.flip()
-
-# Close the window after the loop ends
-win.close()
-
-'''
 
 
 info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
@@ -122,13 +58,18 @@ rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='whi
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
 outlet.push_sample(x=[0])
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
-#base_dir = '\\Users\\mizwa\\Desktop\\SCANS Tangrams\\Tangrams_images'
-base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/Tangrams_images'
+#checking if windows or mac
+if platform == "darwin":
+    print('Mac OS')
+    base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/Tangrams_images'
+elif platform == "win32":
+    print('Windows')
+    base_dir = '\\Users\\mizwa\\Desktop\\SCANS-Tangrams\\Tangrams_images'
+
 
 all_images = {}
 for folder in custom_folder_order:
     full_path = os.path.join(base_dir, folder)
-    print(full_path)
     if os.path.exists(full_path):
         all_images[folder] = [
             os.path.join(full_path, f)
@@ -182,7 +123,6 @@ def show_rest_video():
 
 def select_images(folder, num=6):
     available = list(set(all_images[folder]) - set(used_images))
-    print(folder)
     if len(available) < num:
         raise ValueError(f"Not enough unique images remaining in folder {folder}")
     selected = random.sample(available, num)
@@ -307,7 +247,6 @@ while block_num < block_count :
     show_fixation()
 
     ctrl = False
-    print(folder)
     if folder in control_folders :
         ctrl = True
     
@@ -328,3 +267,70 @@ win.flip()
 core.wait(5)
 win.close()
 core.quit()
+
+
+'''
+from psychopy import visual, event
+
+# Set up the PsychoPy window
+win = visual.Window([800, 600], color="white", units="pix")
+
+instruction = visual.TextStim(win, text="Select a condition from the dropdown:", pos=(0, 250))
+
+# Dropdown options and the button
+dropdown_rect = visual.Rect(win, width=300, height=50, pos=(0, 100), fillColor="lightgray", lineColor="black") # type: ignore
+dropdown_text = visual.TextStim(win, text="Condition A", pos=(0, 100))
+
+# List of options for the dropdown
+options = ['Condition A', 'Condition B', 'Condition C']
+option_rects = []
+option_texts = []
+
+# Create visual elements for each option below the button
+for i, option in enumerate(options):
+    option_rects.append(visual.Rect(win, width=300, height=50, pos=(0, 100 - (i + 1) * 55), fillColor="lightgray", lineColor="black")) # type: ignore
+    option_texts.append(visual.TextStim(win, text=option, pos=(0, 100 - (i + 1) * 55)))
+
+# Track whether the dropdown is open or closed
+dropdown_open = False
+current_option_index = 0
+
+# Set up mouse input
+mouse = event.Mouse(win=win)
+
+# Experiment loop
+while True:
+    # Draw the instructions
+    instruction.draw()
+    
+    # Draw the dropdown button
+    dropdown_rect.draw()
+    dropdown_text.draw()
+
+    # If the dropdown is open, draw the options
+    if dropdown_open:
+        for rect, text in zip(option_rects, option_texts):
+            rect.draw()
+            text.draw()
+
+    # Check for mouse clicks on the dropdown button
+    if mouse.isPressedIn(dropdown_rect) and not dropdown_open:
+        dropdown_open = True  # Open the dropdown menu
+
+    # Check for mouse clicks on any option
+    for i, rect in enumerate(option_rects):
+        if mouse.isPressedIn(rect):
+            dropdown_text.setText(options[i])  # Update the text to the selected option
+            dropdown_open = False  # Close the dropdown menu after selection
+
+    # Check for quitting the experiment (press 'q')
+    if 'q' in event.getKeys():
+        break
+
+    # Update the window
+    win.flip()
+
+# Close the window after the loop ends
+win.close()
+
+'''
