@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    { name = "dukpy" },
-    { name = "psychopy" },
-    { name = "pylsl" },
+    "dukpy>=0.5.0",
+    "psychopy>=2025.1.1",
+    "pylsl>=1.17.6"
 ]
