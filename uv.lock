@@ -4292,7 +4292,6 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "dukpy" },
-    { name = "pip" },
     { name = "psychopy" },
     { name = "pylsl" },
 ]
