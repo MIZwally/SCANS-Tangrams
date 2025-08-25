@@ -1,9 +1,11 @@
 [project]
-name = "bbi-tangrams"
+name = "scans-tangrams"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "dukpy>=0.5.0",
+    { name = "dukpy" },
+    { name = "psychopy" },
+    { name = "pylsl" },
 ]
