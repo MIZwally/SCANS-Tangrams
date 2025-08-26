@@ -10,7 +10,7 @@ info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_forma
 outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '1', 'Run Order': 'KWN'}
+info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'KWN'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
@@ -56,7 +56,8 @@ fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='white')
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-outlet.push_sample(x=[0])
+outlet.push_sample(x=[000])
+print(000)
 ## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
 if platform == "darwin":
@@ -158,7 +159,8 @@ def show_instructions(role, control):
     wait_for_space()
 
 def guessor_block(images, block_num, folder):
-    outlet.push_sample(x=[1])
+    outlet.push_sample(x=[222])
+    print(222)
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -50), (0, -50), (400, -50)]
     image_stims = [visual.ImageStim(win, image=img, pos=pos, size=(250, 250))
                    for img, pos in zip(images, positions)]
@@ -216,7 +218,8 @@ def guessor_block(images, block_num, folder):
                     input_boxes[active_box_index].text += key
 
 def director_block(images, block_num, folder):
-    outlet.push_sample(x=[2])
+    outlet.push_sample(x=[111])
+    print(111)
     for img_path in images:
         stim = visual.ImageStim(win, image=img_path, size=(600, 600))
         stim.draw()
@@ -239,11 +242,18 @@ block_num = 0
 
 while block_num < block_count :
     block_num += 1
-    
     folder_index = int(math.ceil(block_num / 2)) - 1
     check_escape()
     folder = custom_folder_order[folder_index]
 
+    if (block_num - 1) % 4 == 0 or block_num == 1 :
+        if folder in control_folders :
+            outlet.push_sample(x=[333])
+            print(333)
+        else :
+            outlet.push_sample(x=[444])
+            print(444)
+    
     show_fixation()
 
     ctrl = False
@@ -262,7 +272,7 @@ while block_num < block_count :
 
 ## For the end of the task
 thanks.draw()
-outlet.push_sample(x=[0])
+outlet.push_sample(x=[999])
 win.flip()
 core.wait(5)
 win.close()
