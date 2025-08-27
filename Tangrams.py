@@ -18,10 +18,9 @@ if not dlg.OK:
 code_interpreter = {'K': 'easyA,hardA', 'L': 'easyA,hardB', 'M': 'easyB,hardA', 'N': 'easyB,hardB', 
                     'W': 'controlA,controlC', 'X': 'controlA,controlD', 'Y': 'controlB,controlC', 'Z': 'controlB,controlD'}
 
-trial_folders = ['easyA', 'hardA', 'easyB', 'hardB']
-control_folders = ['controlA', 'controlB', 'controlC', 'controlD']
+trial_folders = {'easyA': 1, 'hardA': 2, 'easyB': 3, 'hardB': 4}
+control_folders = {'controlA': 1, 'controlB': 2, 'controlC': 3, 'controlD': 4}
 
-participant_id = info['Subject ID']
 custom_folder_order = []
 if len(info['Run Order']) != 3 :
     raise ValueError('Invalid run order; run order must be 3 letters')
@@ -31,6 +30,7 @@ for code in info['Run Order'] :
         raise ValueError(f'{code} is not a valid run code')
     [custom_folder_order.append(k) for k in code_interpreter[code].split(',')]
 
+participant_id = info['Subject ID']
 if info['Participant #'] != '1' and info['Participant #'] != '2' :
     raise ValueError('Participant # must be either 1 or 2')
 
@@ -159,8 +159,6 @@ def show_instructions(role, control):
     wait_for_space()
 
 def guessor_block(images, block_num, folder):
-    outlet.push_sample(x=[222])
-    print(222)
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -50), (0, -50), (400, -50)]
     image_stims = [visual.ImageStim(win, image=img, pos=pos, size=(250, 250))
                    for img, pos in zip(images, positions)]
@@ -218,8 +216,6 @@ def guessor_block(images, block_num, folder):
                     input_boxes[active_box_index].text += key
 
 def director_block(images, block_num, folder):
-    outlet.push_sample(x=[111])
-    print(111)
     for img_path in images:
         stim = visual.ImageStim(win, image=img_path, size=(600, 600))
         stim.draw()
@@ -241,18 +237,20 @@ block_count = 12
 block_num = 0
 
 while block_num < block_count :
-    block_num += 1
-    folder_index = int(math.ceil(block_num / 2)) - 1
+    if block_num % 2 == 0 :
+        repeat = 1
+    else :
+        repeat = 2
+    
+    folder_index = int(block_num / 2)
     check_escape()
     folder = custom_folder_order[folder_index]
 
-    if (block_num - 1) % 4 == 0 or block_num == 1 :
+    if block_num % 4 == 0 or block_num == 0 :
         if folder in control_folders :
-            outlet.push_sample(x=[333])
-            print(333)
+            condition = 1
         else :
-            outlet.push_sample(x=[444])
-            print(444)
+            condition = 2
     
     show_fixation()
 
@@ -262,13 +260,23 @@ while block_num < block_count :
     
     show_instructions(role, ctrl)
     images = select_images(folder, 6)
+    folder_code = control_folders[folder] if ctrl else trial_folders[folder]
     # add if control block change instructions??
     if role == 'guessor':
+        director = 2
+        trigger = condition*1000 + folder_code*100 + director*10 + repeat
+        outlet.push_sample(x=[trigger])
         guessor_block(images, block_num, ctrl)
     else:
+        director = 1
+        trigger = condition*1000 + folder_code*100 + director*10 + repeat
+        outlet.push_sample(x=[trigger])
         director_block(images, block_num, ctrl)
-
+    print(trigger)
+    
     role = 'director' if role == 'guessor' else 'guessor'
+
+    block_num += 1
 
 ## For the end of the task
 thanks.draw()
