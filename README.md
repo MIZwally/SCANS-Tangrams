@@ -15,6 +15,8 @@ Z: controlB,controlD
 
 <strong>Triggers:</strong>
 
+main trigger: condition*1000 + folder_code*100 + director*10 + repeat
+
 000 - start of experiment\
 111 - director block starts\
 222 - guessor block starts\

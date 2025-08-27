@@ -237,42 +237,38 @@ block_count = 12
 block_num = 0
 
 while block_num < block_count :
-    if block_num % 2 == 0 :
-        repeat = 1
-    else :
-        repeat = 2
-    
     folder_index = int(block_num / 2)
     check_escape()
     folder = custom_folder_order[folder_index]
-
-    if block_num % 4 == 0 or block_num == 0 :
-        if folder in control_folders :
-            condition = 1
-        else :
-            condition = 2
-    
-    show_fixation()
-
+    #task vs control code (1st digit)
     ctrl = False
     if folder in control_folders :
+        condition = 1
         ctrl = True
-    
-    show_instructions(role, ctrl)
-    images = select_images(folder, 6)
+    else :
+        condition = 2
+    #which folder is being used (2nd digit)
     folder_code = control_folders[folder] if ctrl else trial_folders[folder]
-    # add if control block change instructions??
+    #role code (3rd digit)
+    director = 1 if role == 'director' else 2
+    #first vs repeat block (last digit)
+    repeat = 1 if block_num % 2 == 0 else 2
+    #assemble trigger
+    trigger = condition*1000 + folder_code*100 + director*10 + repeat
+    
+    outlet.push_sample(x=777)
+    show_fixation()
+    
+    outlet.push_sample(x=444)
+    show_instructions(role, ctrl)
+    
+    images = select_images(folder, 6)
+    outlet.push_sample(x=[trigger])
+    print(trigger)
     if role == 'guessor':
-        director = 2
-        trigger = condition*1000 + folder_code*100 + director*10 + repeat
-        outlet.push_sample(x=[trigger])
         guessor_block(images, block_num, ctrl)
     else:
-        director = 1
-        trigger = condition*1000 + folder_code*100 + director*10 + repeat
-        outlet.push_sample(x=[trigger])
         director_block(images, block_num, ctrl)
-    print(trigger)
     
     role = 'director' if role == 'guessor' else 'guessor'
 
