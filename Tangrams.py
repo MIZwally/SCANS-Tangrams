@@ -159,21 +159,14 @@ def show_instructions(role, control):
     wait_for_space()
 
 def guessor_block(images, block_num, folder):
-    positions = [(-400, 250), (0, 250), (400, 250), (-400, -50), (0, -50), (400, -50)]
+    positions = [(-400, 250), (0, 250), (400, 250), (-400, -120), (0, -120), (400, -120)]
     image_stims = [visual.ImageStim(win, image=img, pos=pos, size=(250, 250))
                    for img, pos in zip(images, positions)]
 
-    alpha_labels = ["A", "B", "C", "D", "E", "F"]
-    image_labels = [visual.TextStim(win, text=lbl, pos=(pos[0], pos[1]-160), color='white', height=30)
-                    for lbl, pos in zip(alpha_labels, positions)]
-
-    box_positions = [(700, 200), (700, 150), (700, 100), (700, 50), (700, 0), (700, -50)]
-    input_boxes = [visual.TextBox2(win, text='', pos=pos, letterHeight=24,
-                               size=(100, 30), color='white', borderColor='white')
-               for pos in box_positions]
-
-    prompt = visual.TextStim(win, text="Click a box to type. Press ENTER to submit. Press ESC to quit.",
-                             pos=(0, -400), color='white', height=26)
+    box_positions = [(-400, 70), (0, 70), (400, 70), (-400, -300), (0, -300), (400, -300)]
+    input_boxes = [visual.TextBox2(win, text='', pos=pos, letterHeight=24, editable=True,
+                            size=(110, 35), placeholder='', color='black', fillColor='white',
+                            borderColor='black') for pos in box_positions]
 
     start_time = time.time()
     max_duration = 120
@@ -185,22 +178,11 @@ def guessor_block(images, block_num, folder):
 
         for stim in image_stims:
             stim.draw()
-        for label in image_labels:
-            label.draw()
-        for idx, box in enumerate(input_boxes):
-            label = visual.TextStim(win, text=f"{idx+1}", pos=(box.pos[0] - 70, box.pos[1]), color='white', height=20)
-            label.draw()
+        for box in input_boxes:
             box.draw()
 
-        prompt.draw()
         win.flip()
-
-        if mouse.getPressed()[0]:
-            for idx, box in enumerate(input_boxes):
-                if box.contains(mouse):
-                    active_box_index = idx
-                    break
-
+        
         keys = event.getKeys()
         for key in keys:
             check_escape2(key)
@@ -306,7 +288,7 @@ win = visual.Window([800, 600], color="white", units="pix")
 instruction = visual.TextStim(win, text="Select a condition from the dropdown:", pos=(0, 250))
 
 # Dropdown options and the button
-dropdown_rect = visual.Rect(win, width=300, height=50, pos=(0, 100), fillColor="lightgray", lineColor="black") # type: ignore
+dropdown_rect = visual.Rect(win, width=300, height=50, pos=(0, 100), fillColor="lightgray", lineColor="white") # type: ignore
 dropdown_text = visual.TextStim(win, text="Condition A", pos=(0, 100))
 
 # List of options for the dropdown
@@ -316,7 +298,7 @@ option_texts = []
 
 # Create visual elements for each option below the button
 for i, option in enumerate(options):
-    option_rects.append(visual.Rect(win, width=300, height=50, pos=(0, 100 - (i + 1) * 55), fillColor="lightgray", lineColor="black")) # type: ignore
+    option_rects.append(visual.Rect(win, width=300, height=50, pos=(0, 100 - (i + 1) * 55), fillColor="lightgray", lineColor="white")) # type: ignore
     option_texts.append(visual.TextStim(win, text=option, pos=(0, 100 - (i + 1) * 55)))
 
 # Track whether the dropdown is open or closed
