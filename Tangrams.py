@@ -196,7 +196,15 @@ def guessor_block(images, block_num, folder):
                     input_boxes[active_box_index].text = input_boxes[active_box_index].text[:-1]
                 elif len(key) == 1:
                     input_boxes[active_box_index].text += key
-
+        '''
+        #for saving values every time they change (code from valence task)
+        for box in input_boxes:
+            if box.getText() == '':
+                values.insert(0, (0, time.time()))
+            else:
+                values.insert(0, (calibration_slider.getRating(), time.time()))
+        '''
+        
 def director_block(images, block_num, folder):
     for img_path in images:
         stim = visual.ImageStim(win, image=img_path, size=(600, 600))
@@ -220,7 +228,7 @@ while block_num < block_count :
     folder_index = block_num
     check_escape()
     folder = custom_folder_order[folder_index]
-    #task vs control code (1st digit)
+    #task vs control code (trigger 1)
     ctrl = False
     if folder in control_folders :
         condition = 1
@@ -243,24 +251,32 @@ while block_num < block_count :
            role = 'guessor' if info['Participant #'] == '1' else 'director'
     
     for i in range(2) :
-        #Creating Trigger Code
-        #which folder is being used (2nd digit)
+        #Assigning trigger codes
+        #which folder is being used (trigger 2)
         folder_code = control_folders[folder] if ctrl else trial_folders[folder]
-        #role code (3rd digit)
-        director = 1 if role == 'director' else 2
-        #first vs repeat block (last digit)
+        #role code (trigger 3)
+        role_code = 1 if role == 'director' else 2
+        #first vs repeat block (trigger 4)
         repeat = 1 if i == 0 else 2
-        #assemble trigger
-        trigger = condition*1000 + folder_code*100 + director*10 + repeat
         
-        outlet.push_sample(x=[777])
+        #Generating triggers
+        cond_trig = condition + 10
+        fold_trig = folder_code + 20
+        role_trig = role_code + 30
+        rep_trig = repeat + 40
+        
+        outlet.push_sample(x=[77])
         show_fixation()
         
-        outlet.push_sample(x=[444])
+        outlet.push_sample(x=[66])
         show_instructions(role, ctrl)
         
-        outlet.push_sample(x=[trigger])
-        print(trigger)
+        outlet.push_sample(x=[cond_trig])
+        outlet.push_sample(x=[fold_trig])
+        outlet.push_sample(x=[role_trig])
+        outlet.push_sample(x=[rep_trig])
+        print(cond_trig, fold_trig, role_trig, rep_trig)
+        
         if role == 'guessor':
             guessor_block(images, block_num, ctrl)
         else:
@@ -272,7 +288,7 @@ while block_num < block_count :
 
 ## For the end of the task
 thanks.draw()
-outlet.push_sample(x=[999])
+outlet.push_sample(x=[99])
 win.flip()
 core.wait(5)
 win.close()

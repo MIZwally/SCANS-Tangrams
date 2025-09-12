@@ -24,15 +24,18 @@ Z: controlB,controlD
 
 To avoid repeating tangrams, only certain task codes can be paired together in one run order code: K can only be paired with N, and L can only be paired with M. An example run order code would be "KWN". This code would indicate that the session would have 2 task blocks, then 2 control blocks, then 2 more task blocks from a different set of tangrams.
 
-This task is designed to be used with fNIRS technology, so Lab Streaming Layer (LSL) triggers are embedded into the code to mark the data at different events. Each block will have 6 triggers, with each trigger type occuring twice. First there will be a fixation trigger for the fixation period, followed by an instructions triggern for the instructions window, then a run trigger for the round of the tangrams task. The run trigger changes depending on the block type (task or control), the set of tangrams (easy vs hard, A vs B), whether the participant is the director or guessor, and whether or not this is the first round or a second round in a block. Each of these variables is encoded into a digit of the trigger, as described by the equation below:
+This task is designed to be used with fNIRS technology, so Lab Streaming Layer (LSL) triggers are embedded into the code to mark the data at different events. Each block will have 6 triggers, with each trigger type occuring twice. First there will be a fixation trigger for the fixation period, followed by an instructions triggern for the instructions window, then a run trigger for the round of the tangrams task. The run triggers change depending on the block type (task or control), the set of tangrams (easy vs hard, A vs B), whether the participant role is director or guessor, and whether or not this is the first round or a second round in a block. Each of these variables is part of a series of back-to-back triggers, with the first digit indicating which trigger it is, and the second digit being the actual value to encode.
 
-condition * 1000 + folder_code * 100 + director * 10 + repeat
+Condition - value + 10 (11 for control, 12 for task)
+Folder - value + 20 (ex: 23)
+Role - value + 30 (31 for director, 32 for guessor)
+Repeat - value + 40 (41 for first iteration, 42 for second)
 
 There are are other triggers, such as the fixation and instructions triggers, that are static in value. See below for those triggers and their values.
 
 <strong> Static Triggers:</strong>
 
-000 - start of experiment\
-444 - fixation\
-777 - instructions\
-999 - end of experiment
+0 - start of experiment\
+66 - fixation\
+77 - instructions\
+99 - end of experiment
