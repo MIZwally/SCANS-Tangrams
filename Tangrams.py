@@ -15,7 +15,10 @@ dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
 
-code_interpreter = {'K': 'easyA,hardA', 'L': 'easyA,hardB', 'M': 'easyB,hardA', 'N': 'easyB,hardB', 
+code_interpreter = {"C": "easyA,hardA", "D": "easyA,hardB", "E": "easyA,hardC", "F": "easyA,hardD",
+                    "G": "easyB,hardA", "H": "easyB,hardB", "I": "easyB,hardC", "J": "easyB,hardD",
+                    "K": "easyC,hardA", "L": "easyC,hardB", "M": "easyC,hardC", "N": "easyC,hardD",
+                    "O": "easyD,hardA", "P": "easyD,hardB", "Q": "easyD,hardC", "R": "easyD,hardD",
                     'W': 'controlA,controlC', 'X': 'controlA,controlD', 'Y': 'controlB,controlC', 'Z': 'controlB,controlD'}
 
 trial_folders = {'easyA': 1, 'hardA': 2, 'easyB': 3, 'hardB': 4}
