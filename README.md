@@ -14,20 +14,16 @@ Our paradigm contains 4 task blocks (2 pairs of easy and hard blocks) and 2 cont
 
 C: easyA,hardA &emsp;&emsp;&emsp;&emsp; 
 G: easyB,hardA &emsp;&emsp;&emsp;&emsp; 
-K: easyC,hardA &emsp;&emsp;&emsp;&emsp; O: easyD,hardA\
-
+K: easyC,hardA &emsp;&emsp;&emsp;&emsp;&nbsp; O: easyD,hardA\
 D: easyA,hardB &emsp;&emsp;&emsp;&emsp; 
 H: easyB,hardB &emsp;&emsp;&emsp;&emsp; 
-L: easyC,hardB &emsp;&emsp;&emsp;&emsp; P: easyD,hardB\
-
-
-E: easyA,hardC &emsp;&emsp;&emsp;&emsp; 
-I: easyB,hardC &emsp;&emsp;&emsp;&emsp;
-M: easyC,hardC  &emsp;&emsp;&emsp;&emsp; Q: easyD,hardC\
-
-F: easyA,hardD &emsp;&emsp;&emsp;&emsp; 
-J: easyB,hardD &emsp;&emsp;&emsp;&emsp;
-N: easyC,hardD &emsp;&emsp;&emsp;&emsp; R: easyD,hardD\
+L: easyC,hardB &emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp; P: easyD,hardB\
+E: easyA,hardC &emsp;&emsp;&emsp;&emsp;&nbsp;
+I: easyB,hardC &emsp;&emsp;&emsp;&emsp;&nbsp;
+M: easyC,hardC &emsp;&emsp;&emsp;&emsp; Q: easyD,hardC\
+F: easyA,hardD &emsp;&emsp;&emsp;&emsp;
+J: easyB,hardD &emsp;&emsp;&emsp;&emsp;&nbsp;
+N: easyC,hardD &emsp;&emsp;&emsp;&emsp;&nbsp; R: easyD,hardD
 
 <ins>Control Condition</ins>\
 W: controlA,controlC\
