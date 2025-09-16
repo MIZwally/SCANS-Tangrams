@@ -61,7 +61,7 @@ rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='whi
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
 outlet.push_sample(x=[000])
 print(000)
-## Image pathway(make sure youy edit directory before running task and that you have the right folders downloaded)
+## Image pathway (make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
 if platform == "darwin":
     print('Mac OS')
@@ -69,7 +69,6 @@ if platform == "darwin":
 elif platform == "win32":
     print('Windows')
     base_dir = '\\Users\\mizwa\\Desktop\\SCANS-Tangrams\\Tangrams_images'
-
 
 all_images = {}
 for folder in custom_folder_order:
@@ -143,8 +142,9 @@ def show_instructions(role, control):
         instruction = (
             f"{control_instructions} \n\n"
             "You are the GUESSOR.\n\n"
-            "The director will describe one of the images.\n"
-            "Click a box to type your guess.\n"
+            "You will see 6 images. The director will describe an image to you\n"
+            "and you have to guess which of the 6 they are describing.\n\n"
+            "Type the image number (1-6) into the box below the image.\n"
             "You can change your responses anytime during the round.\n\n"
             "You have 2 minutes.\n\nPress SPACE to begin."
         )
@@ -184,7 +184,9 @@ def guessor_block(images, block_num, folder):
         for box in input_boxes:
             #only allow numbers 1-6        
             allowed = ['1', '2', '3', '4', '5', '6', 'backspace'] 
-            box.text = "".join(ch for ch in box.text if ch.lower() in allowed) 
+            box.text = "".join(ch for ch in box.text if ch.lower() in allowed)
+            if len(box.text) > 1:
+                box.text = box.text[0]
             box.draw()
 
         win.flip()
