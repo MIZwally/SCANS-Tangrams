@@ -21,7 +21,7 @@ code_interpreter = {"C": "easyA,hardA", "D": "easyA,hardB", "E": "easyA,hardC", 
                     "O": "easyD,hardA", "P": "easyD,hardB", "Q": "easyD,hardC", "R": "easyD,hardD",
                     'W': 'controlA,controlC', 'X': 'controlA,controlD', 'Y': 'controlB,controlC', 'Z': 'controlB,controlD'}
 
-trial_folders = {'easyA': 1, 'hardA': 2, 'easyB': 3, 'hardB': 4}
+trial_folders = {'easyA': 1, 'hardA': 2, 'easyB': 3, 'hardB': 4, 'easyC': 5, 'hardC': 6, 'easyD': 7, 'hardD': 8}
 control_folders = {'controlA': 1, 'controlB': 2, 'controlC': 3, 'controlD': 4}
 
 custom_folder_order = []
@@ -144,7 +144,7 @@ def show_instructions(role, control):
             f"{control_instructions} \n\n"
             "You are the GUESSOR.\n\n"
             "The director will describe one of the images.\n"
-            "Click a box (A–F) to type your guess.\n"
+            "Click a box to type your guess.\n"
             "You can change your responses anytime during the round.\n\n"
             "You have 2 minutes.\n\nPress SPACE to begin."
         )
@@ -175,13 +175,16 @@ def guessor_block(images, block_num, folder):
     max_duration = 120
 
     active_box_index = None
-
+    
     while time.time() - start_time < max_duration:
         check_escape()
 
         for stim in image_stims:
             stim.draw()
         for box in input_boxes:
+            #only allow numbers 1-6        
+            allowed = ['1', '2', '3', '4', '5', '6', 'backspace'] 
+            box.text = "".join(ch for ch in box.text if ch.lower() in allowed) 
             box.draw()
 
         win.flip()
