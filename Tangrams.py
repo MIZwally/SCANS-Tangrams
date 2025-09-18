@@ -10,7 +10,7 @@ info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_forma
 outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'KWN'}
+info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'CWH'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
