@@ -69,7 +69,7 @@ if platform == "darwin":
     #SCaNS 1
     #base_dir = '/Users/dscnuser/Desktop/SCANS-Tangrams/Tangrams_images'
     #SCaNS 2
-    #base_dir = '/Users/dscn/Desktop/SCANS-Tangrams/Tangrams_images'
+    base_dir = '/Users/dscn/Desktop/SCANS-Tangrams/Tangrams_images'
 elif platform == "win32":
     print('Windows')
     base_dir = '\\Users\\mizwa\\Desktop\\SCANS-Tangrams\\Tangrams_images'
