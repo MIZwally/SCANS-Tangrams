@@ -10,7 +10,7 @@ info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_forma
 outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'ZDN'}
+info = {'Dyad ID': 'test', 'Subject ID': 'sub2', 'Participant #': '2', 'Run Order': 'ZDN'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
@@ -45,11 +45,11 @@ if info['Participant #'] != '1' and info['Participant #'] != '2' :
     raise ValueError('Participant # must be either 1 or 2')
 
 ## For Saving file path and data(not sure if this is working yet)
-save_path = f"data/{participant_id}"
+save_path = f"data/{info['Dyad ID']}"
 os.makedirs(save_path, exist_ok=True)
 
-csv_file = os.path.join(save_path, f"{participant_id}_responses.csv")
-csv_headers = ['dyad', 'participant', 'block', 'folder', 'role',
+csv_file = os.path.join(save_path, f"{info['Dyad ID']}_{participant_id}_responses.csv")
+csv_headers = ['Block', 'Control?', 'Folder', 'Role',
                'image_1', 'image_2', 'image_3', 'image_4', 'image_5', 'image_6',
                'selected_indices', 'response_time', 'status']
 
@@ -72,7 +72,7 @@ print(000)
 #checking if windows or mac
 if platform == "darwin":
     print('Mac OS')
-    #base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/Tangrams_images'
+    base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/Tangrams_images'
     #SCaNS 1
     #base_dir = '/Users/dscnuser/Desktop/SCANS-Tangrams/Tangrams_images'
     #SCaNS 2
@@ -95,10 +95,12 @@ for folder in custom_folder_order:
 
 used_images = []
 
-def log_response(participant, block, folder, role, images, selections, rt, status="completed"):
+def log_response(block, condition, folder, role, images, selections, rt, status="completed"):
+    img_names = [os.path.basename(img) for img in images]
     with open(csv_file, 'a', newline='') as f:
         writer = csv.writer(f)
-        row = [participant, block, folder, role] + images + [','.join(map(str, selections)), rt, status]
+        #row = [block, condition, folder, role] + img_names + [','.join(map(str, selections)), rt, status]
+        row = [block, condition, folder, role] + img_names + selections + [rt, status]
         writer.writerow(row)
 
 ##Utility functions
@@ -136,27 +138,36 @@ def show_rest_video():
     check_escape()
 
 def select_images(folder, num=6):
-    available = list(set(all_images[folder]) - set(used_images))
-    if len(available) < num:
-        raise ValueError(f"Not enough unique images remaining in folder {folder}")
-    selected = random.sample(available, num)
+    full_path = os.path.join(base_dir, folder)
+    if os.path.exists(full_path):
+        images = [
+            os.path.join(full_path, f)
+            for f in os.listdir(full_path)
+            if f.endswith(('.jpg', '.png'))
+        ]
+    else:
+        images = []
+    #available = list(set(all_images[folder]) - set(used_images))
+    #if len(available) < num:
+    #    raise ValueError(f"Not enough unique images remaining in folder {folder}")
+    selected = random.sample(images, num)
     used_images.extend(selected)
     return selected
 
 def show_instructions(role, control):
     if control :
-        control_instructions = 'SOLO'
+        control_instructions = 'You and your partner will NOT see the same images.\n\n'
     else :
-        control_instructions = 'TOGETHER'
+        control_instructions = ' '
     check_escape()
     if role == 'guessor':
         instruction = (
-            f"{control_instructions} \n\n"
-            "You are the GUESSOR.\n\n"
+            f"You are the GUESSOR.\n\n"
             "You will see 6 images. The director will describe an image to you\n"
             "and you have to guess which of the 6 they are describing.\n\n"
             "Type the image number (1-6) into the box below the image.\n"
             "You can change your responses anytime during the round.\n\n"
+            f"{control_instructions}"
             "You have 2 minutes.\n\nPress SPACE to begin."
         )
     else:
@@ -186,6 +197,8 @@ def guessor_block(images, block_num, folder):
     max_duration = 120
 
     active_box_index = None
+    last_text = [''] * 6
+    current_text = [''] * 6
     
     while time.time() - start_time < max_duration:
         check_escape()
@@ -202,27 +215,32 @@ def guessor_block(images, block_num, folder):
 
         win.flip()
         
+        responses = [[] for _ in range(6)]
+        #for saving values every time they change 
+        for i, box in enumerate(input_boxes) :
+            current_text[i] = box.text
+            if current_text[i] != "" and current_text[i] != last_text[i]:
+                print(f"Recorded change: {i+1, current_text[i]}")
+                last_text[i] = current_text[i]  # update tracker
+                responses[i].append((current_text[i], round(time.time() - start_time, 3)))
+        
         keys = event.getKeys()
         for key in keys:
             check_escape2(key)
             if key == 'return' and ((time.time() - start_time) < 105) :
-                responses = [box.text for box in input_boxes]
+                #responses = [box.text for box in input_boxes]
                 rt = round(time.time() - start_time, 3)
-                log_response(participant_id, block_num, folder, 'guessor', images, responses, rt)
+                log_response(block_num, ctrl, folder, 'guessor', images, responses, rt)
                 return
             elif active_box_index is not None:
                 if key == 'backspace':
                     input_boxes[active_box_index].text = input_boxes[active_box_index].text[:-1]
                 elif len(key) == 1:
                     input_boxes[active_box_index].text += key
-        '''
-        #for saving values every time they change (code from valence task)
-        for box in input_boxes:
-            if box.getText() == '':
-                values.insert(0, (0, time.time()))
-            else:
-                values.insert(0, (calibration_slider.getRating(), time.time()))
-        '''
+                    
+
+        
+    log_response(block_num, ctrl, folder, 'guessor', images, responses, 120.0)
         
 def director_block(images, block_num, folder):
     for img_path in images:
