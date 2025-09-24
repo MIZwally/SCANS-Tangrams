@@ -51,7 +51,8 @@ os.makedirs(save_path, exist_ok=True)
 csv_file = os.path.join(save_path, f"{info['Dyad ID']}_{participant_id}_responses.csv")
 csv_headers = ['Block', 'Control?', 'Folder', 'Role',
                'image_1', 'image_2', 'image_3', 'image_4', 'image_5', 'image_6',
-               'selected_indices', 'response_time', 'status']
+               'input_1', 'input_2', 'input_3', 'input_4', 'input_5', 'input_6',
+               'response_time', 'status']
 
 with open(csv_file, 'w', newline='') as f:
     writer = csv.writer(f)
@@ -183,7 +184,7 @@ def show_instructions(role, control):
     win.flip()
     wait_for_space()
 
-def guessor_block(images, block_num, folder):
+def guessor_block(block_num, ctrl, folder, images):
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -120), (0, -120), (400, -120)]
     image_stims = [visual.ImageStim(win, image=img, pos=pos, size=(250, 250))
                    for img, pos in zip(images, positions)]
@@ -199,6 +200,7 @@ def guessor_block(images, block_num, folder):
     active_box_index = None
     last_text = [''] * 6
     current_text = [''] * 6
+    responses = [[] for _ in range(6)]
     
     while time.time() - start_time < max_duration:
         check_escape()
@@ -215,12 +217,10 @@ def guessor_block(images, block_num, folder):
 
         win.flip()
         
-        responses = [[] for _ in range(6)]
         #for saving values every time they change 
         for i, box in enumerate(input_boxes) :
             current_text[i] = box.text
             if current_text[i] != "" and current_text[i] != last_text[i]:
-                print(f"Recorded change: {i+1, current_text[i]}")
                 last_text[i] = current_text[i]  # update tracker
                 responses[i].append((current_text[i], round(time.time() - start_time, 3)))
         
@@ -238,22 +238,23 @@ def guessor_block(images, block_num, folder):
                 elif len(key) == 1:
                     input_boxes[active_box_index].text += key
                     
-
-        
     log_response(block_num, ctrl, folder, 'guessor', images, responses, 120.0)
         
-def director_block(images, block_num, folder):
-    for img_path in images:
+def director_block(block_num, ctrl, folder, images):
+    for i, img_path in enumerate(images, start=1):
         stim = visual.ImageStim(win, image=img_path, size=(600, 600))
+        counter = visual.TextStim(win, text=str(i), pos=(700, -300), color='white')
         stim.draw()
+        counter.draw()
         win.flip()
         start = time.time()
         while time.time() - start < 20:
             check_escape()
             core.wait(0.1)
 
-    rt = 120.0
-    log_response(participant_id, block_num, folder, 'director', images, [], rt)
+    responses = [] * 6
+    log_response(block_num, ctrl, folder, 'guessor', images, responses, 120.0)
+    
 
 ## Loop for task (might need editing for rest video)
 
@@ -337,9 +338,9 @@ while block_num < block_count :
         print(cond_trig, fold_trig, role_trig, rep_trig)
         
         if role == 'guessor':
-            guessor_block(images, block_num, ctrl)
+            guessor_block(block_num + 1, ctrl, folder, images)
         else:
-            director_block(images, block_num, ctrl)
+            director_block(block_num + 1, ctrl, folder, images)
             
         role = 'director' if role == 'guessor' else 'guessor'
     
