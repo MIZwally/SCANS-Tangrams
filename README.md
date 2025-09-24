@@ -48,3 +48,7 @@ There are are other triggers, such as the fixation and instructions triggers, th
 66 - fixation\
 77 - instructions\
 99 - end of experiment
+
+<strong> Dependencies </strong>
+
+See the uv.lock pyproject.toml files for dependencies. The package pylsl requires liblsl, which must be downloaded independently on Mac OS computers. See the package documentation for more details.

@@ -10,7 +10,7 @@ info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_forma
 outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'KWN'}
+info = {'Dyad ID:': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'ZDN'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
@@ -19,11 +19,10 @@ code_interpreter = {"C": "easyA,hardA", "D": "easyA,hardB", "E": "easyA,hardC", 
                     "G": "easyB,hardA", "H": "easyB,hardB", "I": "easyB,hardC", "J": "easyB,hardD",
                     "K": "easyC,hardA", "L": "easyC,hardB", "M": "easyC,hardC", "N": "easyC,hardD",
                     "O": "easyD,hardA", "P": "easyD,hardB", "Q": "easyD,hardC", "R": "easyD,hardD",
-                    'W': 'controlA,controlC', 'X': 'controlA,controlD', 'Y': 'controlB,controlC', 'Z': 'controlB,controlD'}
+                    'Z': 'control,control'}
 
-trial_folders = {'easyA': 1, 'hardA': 2, 'easyB': 3, 'hardB': 4, 'easyC': 5, 'hardC': 6, 'easyD': 7, 'hardD': 8}
-control_folders = {'controlA': 1, 'controlB': 2, 'controlC': 3, 'controlD': 4}
-
+folder_code_dict = {'easyA': 1, 'hardA': 2, 'easyB': 3, 'hardB': 4, 'easyC': 5, 'hardC': 6, 'easyD': 7, 'hardD': 8}
+control_index = []
 custom_folder_order = []
 if len(info['Run Order']) != 3 :
     raise ValueError('Invalid run order; run order must be 3 letters')
@@ -31,7 +30,15 @@ for code in info['Run Order'] :
     code = code.capitalize()
     if code not in code_interpreter.keys() :
         raise ValueError(f'{code} is not a valid run code')
+    if code == 'Z' :
+        control_index.append(True)
+    else :
+        control_index.append(False)
     [custom_folder_order.append(k) for k in code_interpreter[code].split(',')]
+
+#all_folders = ['easyA', 'easyB', 'hardA', 'hardB', 'easyC', 'easyD', 'hardC', 'hardD']
+control_options = [f for f in folder_code_dict.keys() if f not in custom_folder_order]
+print(custom_folder_order, control_options)
 
 participant_id = info['Subject ID']
 if info['Participant #'] != '1' and info['Participant #'] != '2' :
@@ -42,7 +49,7 @@ save_path = f"data/{participant_id}"
 os.makedirs(save_path, exist_ok=True)
 
 csv_file = os.path.join(save_path, f"{participant_id}_responses.csv")
-csv_headers = ['participant', 'block', 'folder', 'role',
+csv_headers = ['dyad', 'participant', 'block', 'folder', 'role',
                'image_1', 'image_2', 'image_3', 'image_4', 'image_5', 'image_6',
                'selected_indices', 'response_time', 'status']
 
@@ -227,7 +234,22 @@ def director_block(images, block_num, folder):
     log_response(participant_id, block_num, folder, 'director', images, [], rt)
 
 ## Loop for task (might need editing for rest video)
-    
+
+def get_control_folder(block_num, increment, f) :
+    i = 0
+    folder = f
+    if block_num % 2 == 0 :
+        while folder == 'control' :
+            if 'easy' in control_options[i] :
+                folder = control_options[i]
+            i += increment
+    else :
+        while folder == 'control' :
+            if 'hard' in control_options[i] :
+                folder = control_options[i]
+            i += increment
+    return folder
+        
 block_count = 6
 block_num = 0
 task_blocks = 0
@@ -237,10 +259,17 @@ while block_num < block_count :
     check_escape()
     folder = custom_folder_order[folder_index]
     #task vs control code (trigger 1)
+    
     ctrl = False
-    if folder in control_folders :
-        condition = 1
+    if folder == 'control' :
         ctrl = True
+        condition = 1
+        if info['Participant #'] == '1' :
+            i = 1
+            folder = get_control_folder(block_num, i, folder)
+        elif info['Participant #'] == '2' :
+            i = -1
+            folder = get_control_folder(block_num, i, folder)
     else :
         condition = 2
         task_blocks += 1
@@ -261,7 +290,7 @@ while block_num < block_count :
     for i in range(2) :
         #Assigning trigger codes
         #which folder is being used (trigger 2)
-        folder_code = control_folders[folder] if ctrl else trial_folders[folder]
+        folder_code = folder_code_dict[folder]
         #role code (trigger 3)
         role_code = 1 if role == 'director' else 2
         #first vs repeat block (trigger 4)
@@ -301,70 +330,3 @@ win.flip()
 core.wait(5)
 win.close()
 core.quit()
-
-
-'''
-from psychopy import visual, event
-
-# Set up the PsychoPy window
-win = visual.Window([800, 600], color="white", units="pix")
-
-instruction = visual.TextStim(win, text="Select a condition from the dropdown:", pos=(0, 250))
-
-# Dropdown options and the button
-dropdown_rect = visual.Rect(win, width=300, height=50, pos=(0, 100), fillColor="lightgray", lineColor="white") # type: ignore
-dropdown_text = visual.TextStim(win, text="Condition A", pos=(0, 100))
-
-# List of options for the dropdown
-options = ['Condition A', 'Condition B', 'Condition C']
-option_rects = []
-option_texts = []
-
-# Create visual elements for each option below the button
-for i, option in enumerate(options):
-    option_rects.append(visual.Rect(win, width=300, height=50, pos=(0, 100 - (i + 1) * 55), fillColor="lightgray", lineColor="white")) # type: ignore
-    option_texts.append(visual.TextStim(win, text=option, pos=(0, 100 - (i + 1) * 55)))
-
-# Track whether the dropdown is open or closed
-dropdown_open = False
-current_option_index = 0
-
-# Set up mouse input
-mouse = event.Mouse(win=win)
-
-# Experiment loop
-while True:
-    # Draw the instructions
-    instruction.draw()
-    
-    # Draw the dropdown button
-    dropdown_rect.draw()
-    dropdown_text.draw()
-
-    # If the dropdown is open, draw the options
-    if dropdown_open:
-        for rect, text in zip(option_rects, option_texts):
-            rect.draw()
-            text.draw()
-
-    # Check for mouse clicks on the dropdown button
-    if mouse.isPressedIn(dropdown_rect) and not dropdown_open:
-        dropdown_open = True  # Open the dropdown menu
-
-    # Check for mouse clicks on any option
-    for i, rect in enumerate(option_rects):
-        if mouse.isPressedIn(rect):
-            dropdown_text.setText(options[i])  # Update the text to the selected option
-            dropdown_open = False  # Close the dropdown menu after selection
-
-    # Check for quitting the experiment (press 'q')
-    if 'q' in event.getKeys():
-        break
-
-    # Update the window
-    win.flip()
-
-# Close the window after the loop ends
-win.close()
-
-'''
