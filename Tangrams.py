@@ -10,7 +10,7 @@ info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_forma
 outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID': 'test', 'Subject ID': 'sub2', 'Participant #': '2', 'Run Order': 'ZDN'}
+info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'DZN'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
@@ -242,8 +242,8 @@ def guessor_block(block_num, ctrl, folder, images):
         
 def director_block(block_num, ctrl, folder, images):
     for i, img_path in enumerate(images, start=1):
-        stim = visual.ImageStim(win, image=img_path, size=(600, 600))
-        counter = visual.TextStim(win, text=str(i), pos=(700, -300), color='white')
+        stim = visual.ImageStim(win, image=img_path, size=(550, 550))
+        counter = visual.TextStim(win, text=str(i), pos=(600, -300), color='white', height=30)
         stim.draw()
         counter.draw()
         win.flip()
@@ -253,7 +253,7 @@ def director_block(block_num, ctrl, folder, images):
             core.wait(0.1)
 
     responses = [] * 6
-    log_response(block_num, ctrl, folder, 'guessor', images, responses, 120.0)
+    log_response(block_num, ctrl, folder, 'director', images, responses, 120.0)
     
 
 ## Loop for task (might need editing for rest video)
