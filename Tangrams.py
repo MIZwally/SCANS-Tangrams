@@ -36,9 +36,7 @@ for code in info['Run Order'] :
         control_index.append(False)
     [custom_folder_order.append(k) for k in code_interpreter[code].split(',')]
 
-#all_folders = ['easyA', 'easyB', 'hardA', 'hardB', 'easyC', 'easyD', 'hardC', 'hardD']
 control_options = [f for f in folder_code_dict.keys() if f not in custom_folder_order]
-print(custom_folder_order, control_options)
 
 participant_id = info['Subject ID']
 if info['Participant #'] != '1' and info['Participant #'] != '2' :
@@ -65,10 +63,9 @@ mouse = event.Mouse(visible=True, win=win)
 ## Instruction section change for if needed
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
-rest = visual.TextStim(win, text='[Rest / Break Video Playing Here]', color='white')
 instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-outlet.push_sample(x=[000])
-print(000)
+outlet.push_sample(x=[0])
+print(0)
 ## Image pathway (make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
 if platform == "darwin":
@@ -130,12 +127,6 @@ def show_fixation(duration=3):
     fixation.draw()
     win.flip()
     core.wait(duration)
-    check_escape()
-
-def show_rest_video():
-    rest.draw()
-    win.flip()
-    core.wait(10)
     check_escape()
 
 def select_images(folder, num=6):
@@ -256,8 +247,6 @@ def director_block(block_num, ctrl, folder, images):
     log_response(block_num, ctrl, folder, 'director', images, responses, 120.0)
     
 
-## Loop for task (might need editing for rest video)
-
 def get_control_folder(block_num, increment, f) :
     i = 0
     folder = f
@@ -277,6 +266,7 @@ block_count = 6
 block_num = 0
 task_blocks = 0
 
+#looping through blocks
 while block_num < block_count :
     folder_index = block_num
     check_escape()
@@ -349,6 +339,7 @@ while block_num < block_count :
 ## For the end of the task
 thanks.draw()
 outlet.push_sample(x=[99])
+print(99)
 win.flip()
 core.wait(5)
 win.close()
