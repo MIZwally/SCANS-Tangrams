@@ -70,14 +70,14 @@ print(0)
 #checking if windows or mac
 if platform == "darwin":
     print('Mac OS')
-    base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/Tangrams_images'
+    base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/images'
     #SCaNS 1
-    #base_dir = '/Users/dscnuser/Desktop/SCANS-Tangrams/Tangrams_images'
+    #base_dir = '/Users/dscnuser/Desktop/SCANS-Tangrams/images'
     #SCaNS 2
-    #base_dir = '/Users/dscn/Desktop/SCANS-Tangrams/Tangrams_images'
+    #base_dir = '/Users/dscn/Desktop/SCANS-Tangrams/images'
 elif platform == "win32":
     print('Windows')
-    base_dir = '\\Users\\mizwa\\Desktop\\SCANS-Tangrams\\Tangrams_images'
+    base_dir = '\\Users\\mizwa\\Desktop\\SCANS-Tangrams\\images'
 
 all_images = {}
 for folder in custom_folder_order:
