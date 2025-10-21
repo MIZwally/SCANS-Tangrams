@@ -3,7 +3,7 @@ import os, random, csv, time, math
 from pylsl import StreamInfo, StreamOutlet
 from sys import platform
 
-##Tangrams code for SCANS Project 6/30/2025
+##Tangrams code for SCANS Project
 
 
 info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
@@ -71,13 +71,11 @@ print(0)
 if platform == "darwin":
     print('Mac OS')
     base_dir = '/Users/mizwally/Desktop/SCANS-Tangrams/images'
-    #SCaNS 1
-    #base_dir = '/Users/dscnuser/Desktop/SCANS-Tangrams/images'
-    #SCaNS 2
-    #base_dir = '/Users/dscn/Desktop/SCANS-Tangrams/images'
 elif platform == "win32":
     print('Windows')
     base_dir = '\\Users\\mizwa\\Desktop\\SCANS-Tangrams\\images'
+    #SCaNS
+    #base_dir = '\\Users\\mizwally\\Desktop\\SCANS-Tangrams\\images'
 
 all_images = {}
 for folder in custom_folder_order:
