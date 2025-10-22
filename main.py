@@ -121,7 +121,7 @@ def wait_for_space():
             break
         core.wait(0.1)
 
-def show_fixation(duration=3):
+def show_fixation(duration=5):
     fixation.draw()
     win.flip()
     core.wait(duration)
@@ -158,7 +158,7 @@ def show_instructions(role, control):
             "Type the image number (1-6) into the box below the image.\n"
             "You can change your responses anytime during the round.\n\n"
             f"{control_instructions}"
-            "You have 2 minutes.\n\nPress SPACE to begin."
+            "You have 2 minutes.\n\n"
         )
     else:
         instruction = (
@@ -166,12 +166,16 @@ def show_instructions(role, control):
             "You are the DIRECTOR.\n\n"
             "You will see one image at a time.\n"
             "Describe each image to the guessor.\n\n"
-            "Each image will appear for 20 seconds.\n\n\n\n\n\n\nPress SPACE to begin."
+            "Each image will appear for 20 seconds."
         )
     instruction_text.text = instruction
     instruction_text.draw()
     win.flip()
-    wait_for_space()
+    start = time.time()
+    while time.time() - start < 10:
+            check_escape()
+            core.wait(0.1)
+    #wait_for_space()
 
 def guessor_block(block_num, ctrl, folder, images):
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -120), (0, -120), (400, -120)]
