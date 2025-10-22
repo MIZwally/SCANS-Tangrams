@@ -1,5 +1,5 @@
 [project]
-name = "scans-tangrams"
+name = "scans-abstract_images_task"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,5 +7,5 @@ requires-python = ">=3.10"
 dependencies = [
     "dukpy>=0.5.0",
     "psychopy>=2025.1.1",
-    "pylsl>=1.17.6"
+    "pylsl>=1.17.6",
 ]

@@ -4278,7 +4278,7 @@ wheels = [
 ]
 
 [[package]]
-name = "scans-tangrams"
+name = "scans-abstract_images_task"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
