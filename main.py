@@ -74,8 +74,10 @@ if platform == "darwin":
 elif platform == "win32":
     print('Windows')
     base_dir = '\\Users\\mizwa\\Desktop\\SCANS-abstract_image_task\\images'
-    #SCaNS
-    #base_dir = '\\Users\\mizwally\\Desktop\\SCANS-Tangrams\\images'
+    #SCaNS 1
+    #base_dir = '\\Users\\scans1\\Desktop\\SCANS-abstract_image_task\\images'
+    #SCaNS 2
+    #base_dir = '\\Users\\scans2\\Desktop\\SCANS-abstract_image_task\\images'
 
 all_images = {}
 for folder in custom_folder_order:
