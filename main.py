@@ -2,10 +2,10 @@ from psychopy import visual, core, event, gui
 import os, random, csv, time, math
 from pylsl import resolve_streams, StreamOutlet, StreamInfo
 from sys import platform
+from stream import send_trigger
 
 ##Tangrams code for SCANS Project
-
-
+'''
 print("Looking for stream 'Trigger1'...")
 
 print("Looking for streams...")
@@ -26,7 +26,7 @@ streams = matching
 
 print(f"Found stream: {streams[0].name()}")
 outlet = StreamOutlet(streams[0])
-
+'''
 ## if you want to create a stream in this file use this code
 #info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
 #outlet = StreamOutlet(info)
@@ -86,7 +86,8 @@ mouse = event.Mouse(visible=True, win=win)
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-outlet.push_sample(x=[99])
+send_trigger(99)
+#outlet.push_sample(x=[99])
 print(99)
 ## Image pathway (make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
@@ -142,7 +143,7 @@ def wait_for_space():
         core.wait(0.1)
 
 def show_fixation(duration=5):
-    outlet.push_sample(x=[77])
+    send_trigger(77)
     fixation.draw()
     win.flip()
     core.wait(duration)
@@ -166,7 +167,7 @@ def select_images(folder, num=6):
     return selected
 
 def show_instructions(role, control):
-    outlet.push_sample(x=[66])
+    send_trigger(66)
     if control :
         control_instructions = 'You and your partner will NOT see the same images.\n\n\n\n\n\n'
     else :
@@ -343,10 +344,10 @@ while block_num < block_count :
         
         show_instructions(role, ctrl)
         
-        outlet.push_sample(x=[cond_trig])
-        outlet.push_sample(x=[fold_trig])
-        outlet.push_sample(x=[role_trig])
-        outlet.push_sample(x=[rep_trig])
+        send_trigger(cond_trig)
+        send_trigger(fold_trig)
+        send_trigger(role_trig)
+        send_trigger(rep_trig)
         print(cond_trig, fold_trig, role_trig, rep_trig)
         
         if role == 'guessor':
@@ -360,7 +361,7 @@ while block_num < block_count :
 
 ## For the end of the task
 thanks.draw()
-outlet.push_sample(x=[99])
+send_trigger(99)
 print(99)
 win.flip()
 core.wait(5)
