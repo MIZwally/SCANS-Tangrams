@@ -2,7 +2,12 @@ from psychopy import visual, core, event, gui
 import os, random, csv, time, math
 from pylsl import resolve_streams, StreamOutlet, StreamInfo
 from sys import platform
-from stream import send_trigger
+from pathlib import Path
+import sys
+import gc
+parent_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(parent_dir))
+from triggers import send_trigger
 
 ##Tangrams code for SCANS Project
 '''
@@ -126,12 +131,14 @@ def check_escape():
         log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
         win.close()
         core.quit()
+        gc.collect()
 
 def check_escape2(key):
     if key == 'escape':
         log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
         win.close()
         core.quit()
+        gc.collect()
 
 def wait_for_space():
     while True:
@@ -367,3 +374,4 @@ win.flip()
 core.wait(5)
 win.close()
 core.quit()
+gc.collect()
