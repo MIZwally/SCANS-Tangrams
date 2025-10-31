@@ -1,6 +1,6 @@
 from psychopy import visual, core, event, gui
 import os, random, csv, time, math
-from pylsl import resolve_stream, StreamOutlet, StreamInfo
+from pylsl import resolve_streams, StreamOutlet, StreamInfo
 from sys import platform
 
 ##Tangrams code for SCANS Project
@@ -8,16 +8,28 @@ from sys import platform
 
 print("Looking for stream 'Trigger1'...")
 
-# Find the stream
-streams = resolve_stream('name', 'Trigger1')
-if not streams:
-    print("Error: Stream not found!")
-    print("Creating stream.")
-    info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
-    outlet = StreamOutlet(info)
-else :
-    print(f"Found stream: {streams[0].name()}")
-    outlet = StreamOutlet(streams[0])
+print("Looking for streams...")
+all_streams = resolve_streams(5.0)
+
+# Filter for the one we want
+matching = [s for s in all_streams if s.name() == 'Trigger1']
+
+if not matching:
+    print("Stream 'Trigger1' not found!")
+    if all_streams:
+        print(f"\nAvailable streams:")
+        for s in all_streams:
+            print(f"  - {s.name()} ({s.type()})")
+    exit()
+
+streams = matching
+
+print(f"Found stream: {streams[0].name()}")
+outlet = StreamOutlet(streams[0])
+
+## if you want to create a stream in this file use this code
+#info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
+#outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'DZN'}
@@ -73,9 +85,9 @@ mouse = event.Mouse(visible=True, win=win)
 ## Instruction section change for if needed
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
-instruction_text = visual.TextStim(win, text='', height=30, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-outlet.push_sample(x=[0])
-print(0)
+instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
+outlet.push_sample(x=[99])
+print(99)
 ## Image pathway (make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
 if platform == "darwin":
@@ -130,6 +142,7 @@ def wait_for_space():
         core.wait(0.1)
 
 def show_fixation(duration=5):
+    outlet.push_sample(x=[77])
     fixation.draw()
     win.flip()
     core.wait(duration)
@@ -153,6 +166,7 @@ def select_images(folder, num=6):
     return selected
 
 def show_instructions(role, control):
+    outlet.push_sample(x=[66])
     if control :
         control_instructions = 'You and your partner will NOT see the same images.\n\n\n\n\n\n'
     else :
@@ -325,10 +339,8 @@ while block_num < block_count :
         role_trig = role_code + 30
         rep_trig = repeat + 40
         
-        outlet.push_sample(x=[77])
         show_fixation()
         
-        outlet.push_sample(x=[66])
         show_instructions(role, ctrl)
         
         outlet.push_sample(x=[cond_trig])
