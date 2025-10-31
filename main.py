@@ -1,13 +1,23 @@
 from psychopy import visual, core, event, gui
 import os, random, csv, time, math
-from pylsl import StreamInfo, StreamOutlet
+from pylsl import resolve_stream, StreamOutlet, StreamInfo
 from sys import platform
 
 ##Tangrams code for SCANS Project
 
 
-info = StreamInfo(name='Trigger', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
-outlet = StreamOutlet(info)
+print("Looking for stream 'Trigger1'...")
+
+# Find the stream
+streams = resolve_stream('name', 'Trigger1')
+if not streams:
+    print("Error: Stream not found!")
+    print("Creating stream.")
+    info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
+    outlet = StreamOutlet(info)
+else :
+    print(f"Found stream: {streams[0].name()}")
+    outlet = StreamOutlet(streams[0])
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'DZN'}
@@ -73,11 +83,7 @@ if platform == "darwin":
     base_dir = '/Users/mizwally/Desktop/SCANS-abstract_image_task/images'
 elif platform == "win32":
     print('Windows')
-    base_dir = '\\Users\\mizwa\\Desktop\\SCANS-abstract_image_task\\images'
-    #SCaNS 1
-    #base_dir = '\\Users\\scans1\\Desktop\\SCANS-abstract_image_task\\images'
-    #SCaNS 2
-    #base_dir = '\\Users\\scans2\\Desktop\\SCANS-abstract_image_task\\images'
+    base_dir = '.\\images'
 
 all_images = {}
 for folder in custom_folder_order:
