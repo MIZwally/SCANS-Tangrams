@@ -1,40 +1,13 @@
 from psychopy import visual, core, event, gui
-import os, random, csv, time, math
+import os, random, csv, time
 from pylsl import resolve_streams, StreamOutlet, StreamInfo
 from sys import platform
-from pathlib import Path
-import sys
-import gc
-parent_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(parent_dir))
-from triggers import send_trigger
 
 ##Tangrams code for SCANS Project
-'''
-print("Looking for stream 'Trigger1'...")
 
-print("Looking for streams...")
-all_streams = resolve_streams(5.0)
-
-# Filter for the one we want
-matching = [s for s in all_streams if s.name() == 'Trigger1']
-
-if not matching:
-    print("Stream 'Trigger1' not found!")
-    if all_streams:
-        print(f"\nAvailable streams:")
-        for s in all_streams:
-            print(f"  - {s.name()} ({s.type()})")
-    exit()
-
-streams = matching
-
-print(f"Found stream: {streams[0].name()}")
-outlet = StreamOutlet(streams[0])
-'''
 ## if you want to create a stream in this file use this code
-#info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
-#outlet = StreamOutlet(info)
+info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
+outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'DZN'}
