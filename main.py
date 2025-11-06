@@ -61,7 +61,8 @@ win = visual.Window(size=(1500, 850), fullscr=True, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
 ## Instruction section change for if needed
-trigger_test = thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
+trigger_test = visual.TextStim(win, text="Press space to send a test trigger", color='white', height=50)
+start = visual.TextStim(win, text="Press space to start the task", color='white', height=50)
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
@@ -103,14 +104,12 @@ def check_escape():
         log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
         win.close()
         core.quit()
-        gc.collect()
 
 def check_escape2(key):
     if key == 'escape':
         log_response(participant_id, 'N/A', 'N/A', 'N/A', ['']*6, [], 0.0, status="early_exit")
         win.close()
         core.quit()
-        gc.collect()
 
 def wait_for_space():
     while True:
@@ -122,7 +121,7 @@ def wait_for_space():
         core.wait(0.1)
 
 def show_fixation(duration=5):
-    send_trigger(77)
+    outlet.push_sample(x=[77])
     fixation.draw()
     win.flip()
     core.wait(duration)
@@ -146,7 +145,7 @@ def select_images(folder, num=6):
     return selected
 
 def show_instructions(role, control):
-    send_trigger(66)
+    outlet.push_sample(x=[66])
     if control :
         control_instructions = 'You and your partner will NOT see the same images.\n\n\n\n\n\n'
     else :
@@ -155,7 +154,7 @@ def show_instructions(role, control):
     if role == 'guessor':
         instruction = (
             f"You are the GUESSOR.\n\n"
-            "You will see 6 images. The director will describe an image to you\n"
+            "You will see 6 images. The director will describe an image to you"
             "and you have to guess which of the 6 they are describing.\n\n"
             "Type the image number (1-6) into the box below the image.\n"
             "You can change your responses anytime during the round.\n\n"
@@ -270,8 +269,19 @@ def get_control_folder(block_num, increment, f) :
 block_count = 6
 block_num = 0
 task_blocks = 0
+
+trigger_test.draw()
+win.flip()
+wait_for_space()
+outlet.push_sample(x=[1])
+print("trigger test")
+
+start.draw()
+win.flip()
+wait_for_space()
 outlet.push_sample(x=[99])
 print(99)
+
 #looping through blocks
 while block_num < block_count :
     folder_index = block_num
