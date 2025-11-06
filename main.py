@@ -61,12 +61,11 @@ win = visual.Window(size=(1500, 850), fullscr=True, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
 ## Instruction section change for if needed
+trigger_test = thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-send_trigger(99)
-#outlet.push_sample(x=[99])
-print(99)
+
 ## Image pathway (make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
 if platform == "darwin":
@@ -266,11 +265,13 @@ def get_control_folder(block_num, increment, f) :
                 folder = control_options[i]
             i += increment
     return folder
-        
+
+
 block_count = 6
 block_num = 0
 task_blocks = 0
-
+outlet.push_sample(x=[99])
+print(99)
 #looping through blocks
 while block_num < block_count :
     folder_index = block_num
@@ -320,14 +321,12 @@ while block_num < block_count :
         role_trig = role_code + 30
         rep_trig = repeat + 40
         
-        show_fixation()
-        
         show_instructions(role, ctrl)
         
-        send_trigger(cond_trig)
-        send_trigger(fold_trig)
-        send_trigger(role_trig)
-        send_trigger(rep_trig)
+        outlet.push_sample(x=[cond_trig])
+        outlet.push_sample(x=[fold_trig])
+        outlet.push_sample(x=[role_trig])
+        outlet.push_sample(x=[rep_trig])
         print(cond_trig, fold_trig, role_trig, rep_trig)
         
         if role == 'guessor':
@@ -338,13 +337,14 @@ while block_num < block_count :
         role = 'director' if role == 'guessor' else 'guessor'
     
     block_num += 1
+    if block_num != block_count :
+        show_fixation()
 
 ## For the end of the task
 thanks.draw()
-send_trigger(99)
+outlet.push_sample(x=[99])
 print(99)
 win.flip()
 core.wait(5)
 win.close()
 core.quit()
-gc.collect()
