@@ -10,7 +10,7 @@ info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_form
 outlet = StreamOutlet(info)
 
 ## Loading screen for participant ID and how to change file order(update the file thing)
-info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '2', 'Run Order': 'DZN'}
+info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '1', 'Run Order': 'DZN'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
 if not dlg.OK:
     core.quit()
@@ -60,9 +60,17 @@ with open(csv_file, 'w', newline='') as f:
 win = visual.Window(size=(1500, 850), fullscr=True, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
+start_text = ("Welcome to the abstract images task!\n\n"
+            "For this task you will be working with your partner to get the right answers.\n\n"
+            "You will each be assigned the role of either Director or Guessor.\n"
+            "The Director will describe images to the Guessor, who has to determine which image is being described.\n\n"
+            "Sometimes you and your partner will not see the same images, but the instructions will make that clear.\n\n"
+            "Please wait for the experimentor to start the task."
+            )
+
 ## Instruction section change for if needed
 trigger_test = visual.TextStim(win, text="Press space to send a test trigger", color='white', height=50)
-start = visual.TextStim(win, text="Press space to start the task", color='white', height=50)
+start = visual.TextStim(win, text=start_text, color='white', height=45, wrapWidth=1400, pos=(0, 300), anchorVert='top')
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
@@ -71,7 +79,7 @@ instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, colo
 #checking if windows or mac
 if platform == "darwin":
     print('Mac OS')
-    base_dir = '/Users/mizwally/Desktop/SCANS-abstract_image_task/images'
+    base_dir = './images'
 elif platform == "win32":
     print('Windows')
     base_dir = '.\\images'
@@ -303,8 +311,6 @@ while block_num < block_count :
         condition = 2
         task_blocks += 1
     
-    images = select_images(folder, 6)
-    
     if ctrl == True :
         if info['Participant #'] == '1' :
             role = 'director' if block_num % 2 == 0 else 'guessor'
@@ -317,6 +323,7 @@ while block_num < block_count :
            role = 'guessor' if info['Participant #'] == '1' else 'director'
     
     for i in range(2) :
+        images = select_images(folder, 6)
         #Assigning trigger codes
         #which folder is being used (trigger 2)
         folder_code = folder_code_dict[folder]
