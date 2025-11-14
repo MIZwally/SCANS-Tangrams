@@ -1,6 +1,8 @@
-from psychopy import visual, core, event, gui
+from psychopy import prefs
+prefs.hardware['audioLib'] = ['PTB', 'sounddevice', 'pyo', 'pygame'] # type: ignore
+from psychopy import visual, core, event, gui, sound
 import os, random, csv, time
-from pylsl import resolve_streams, StreamOutlet, StreamInfo
+from pylsl import StreamOutlet, StreamInfo
 from sys import platform
 
 ##Tangrams code for SCANS Project
@@ -8,7 +10,6 @@ from sys import platform
 ## if you want to create a stream in this file use this code
 info = StreamInfo(name='Trigger1', type='Markers', channel_count=1, channel_format='int32', source_id='Tangrams')  # pyright: ignore[reportArgumentType]
 outlet = StreamOutlet(info)
-
 ## Loading screen for participant ID and how to change file order(update the file thing)
 info = {'Dyad ID': '', 'Subject ID': '', 'Participant #': '1', 'Run Order': 'DZN'}
 dlg = gui.DlgFromDict(info, title="Tangrams", order=list(info.keys()))
@@ -61,19 +62,22 @@ win = visual.Window(size=(1500, 850), fullscr=True, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
 start_text = ("Welcome to the abstract images task!\n\n"
-            "For this task you will be working with your partner to get the right answers.\n\n"
+            "For this task you will be working with your partner.\n\n"
             "You will each be assigned the role of either Director or Guessor.\n"
             "The Director will describe images to the Guessor, who has to determine which image is being described.\n\n"
-            "Sometimes you and your partner will not see the same images, but the instructions will make that clear.\n\n"
+            "Sometimes you and your partner will not see the same images, but you will be told when that happens.\n\n"
             "Please wait for the experimentor to start the task."
             )
 
-## Instruction section change for if needed
+## set up text and sound devices
 trigger_test = visual.TextStim(win, text="Press space to send a test trigger", color='white', height=50)
 start = visual.TextStim(win, text=start_text, color='white', height=45, wrapWidth=1400, pos=(0, 300), anchorVert='top')
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
 instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
+
+start_sound = sound.Sound('D', secs=0.5, stereo=True, hamming=False, name='start_sound')
+end_sound = sound.Sound('C', secs=0.5, stereo=True, hamming=False, name='end_sound')
 
 ## Image pathway (make sure youy edit directory before running task and that you have the right folders downloaded)
 #checking if windows or mac
@@ -286,6 +290,7 @@ print("trigger test")
 
 start.draw()
 win.flip()
+start_sound.play()
 wait_for_space()
 outlet.push_sample(x=[99])
 print(99)
@@ -361,6 +366,7 @@ while block_num < block_count :
 thanks.draw()
 outlet.push_sample(x=[99])
 print(99)
+end_sound.play()
 win.flip()
 core.wait(5)
 win.close()
