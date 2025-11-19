@@ -58,24 +58,43 @@ with open(csv_file, 'w', newline='') as f:
     writer.writerow(csv_headers)
 
 ## Window set up(change window size based on computer used)
-win = visual.Window(size=(1500, 850), fullscr=True, color=[0,0,0], units='pix')
+win = visual.Window(size=(1500, 850), fullscr=False, color=[0,0,0], units='pix')
 mouse = event.Mouse(visible=True, win=win)
 
 start_text = ("Welcome to the abstract images task!\n\n"
             "For this task you will be working with your partner.\n\n"
             "You will each be assigned the role of either Director or Guessor.\n"
-            "The Director will describe images to the Guessor, who has to determine which image is being described.\n\n"
+            "These roles will be switched throughout the task.\n\n"
             "Sometimes you and your partner will not see the same images, but you will be told when that happens.\n\n"
-            "Please wait for the experimentor to start the task."
+            )
+guessor_text = ("If you are the Guessor, you will see 6 images.\n\n" 
+            "The director will describe an image to you and you have to guess\n"
+            "which of the 6 they are describing.\n\n"
+            "Type the image number (1-6) into the box below the image.\n\n"
+            "You can change your responses anytime during the round.\n\n"
+            #"You will have 2 minutes."
+            )
+
+director_text = ("If you are the Director, you will see one image at a time\n"
+            "and describe it to the Guessor.\n\n"
+            "Each image will appear for 20 seconds.\n\n"
+            "Do not use the shapes in the image to describe it.\n"
             )
 
 ## set up text and sound devices
-trigger_test = visual.TextStim(win, text="Press space to send a test trigger", color='white', height=50)
-start = visual.TextStim(win, text=start_text, color='white', height=45, wrapWidth=1400, pos=(0, 300), anchorVert='top')
+trigger_test = visual.TextStim(win, text="Trigger test", color='white', height=50)
+start = visual.TextStim(win, text=start_text, color='white', height=45, 
+                        wrapWidth=1400, pos=(0, 300), anchorVert='top')
+guessor_directions = visual.TextStim(win, text=guessor_text, color='white', height=45, 
+                                     wrapWidth=1400, pos=(0, 300), anchorVert='top')
+director_directions = visual.TextStim(win, text=director_text, color='white', height=45, 
+                                      wrapWidth=1400, pos=(0, 300), anchorVert='top')
 fixation = visual.TextStim(win, text='+', height=50, color='white')
 thanks = visual.TextStim(win, text="Thank you for participating!", color='white')
-instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, color='white', pos=(0, 300), anchorVert='top')
-
+instruction_text = visual.TextStim(win, text='', height=50, wrapWidth=1400, 
+                                   color='white', pos=(0, 150), anchorVert='top')
+continue_text = visual.TextStim(win, text="Press space to continue.", color='white', 
+                                height=45, wrapWidth=1400, pos=(0, -150), anchorVert='top')
 start_sound = sound.Sound('D', secs=0.5, stereo=True, hamming=False, name='start_sound')
 end_sound = sound.Sound('C', secs=0.5, stereo=True, hamming=False, name='end_sound')
 
@@ -127,7 +146,8 @@ def wait_for_space():
     while True:
         keys = event.getKeys(keyList=['space', 'escape'])
         if 'escape' in keys:
-            check_escape()
+            win.close()
+            core.quit()
         if 'space' in keys:
             break
         core.wait(0.1)
@@ -165,21 +185,13 @@ def show_instructions(role, control):
     check_escape()
     if role == 'guessor':
         instruction = (
-            f"You are the GUESSOR.\n\n"
-            "You will see 6 images. The director will describe an image to you"
-            "and you have to guess which of the 6 they are describing.\n\n"
-            "Type the image number (1-6) into the box below the image.\n"
-            "You can change your responses anytime during the round.\n\n"
+            "You are the GUESSOR.\n\n"
             f"{control_instructions}"
-            "You have 2 minutes.\n\n"
         )
     else:
         instruction = (
-            f"{control_instructions} \n\n"
             "You are the DIRECTOR.\n\n"
-            "You will see one image at a time.\n"
-            "Describe each image to the guessor.\n\n"
-            "Each image will appear for 20 seconds."
+            f"{control_instructions}"
         )
     instruction_text.text = instruction
     instruction_text.draw()
@@ -188,7 +200,6 @@ def show_instructions(role, control):
     while time.time() - start < 10:
             check_escape()
             core.wait(0.1)
-    #wait_for_space()
 
 def guessor_block(block_num, ctrl, folder, images):
     positions = [(-400, 250), (0, 250), (400, 250), (-400, -120), (0, -120), (400, -120)]
@@ -288,12 +299,42 @@ wait_for_space()
 outlet.push_sample(x=[1])
 print("trigger test")
 
-start.draw()
-win.flip()
+clock = core.Clock()
 start_sound.play()
-wait_for_space()
 outlet.push_sample(x=[99])
 print(99)
+while True:
+    t = clock.getTime()
+    start.draw()
+    if t > 5:
+        continue_text.draw()
+        win.flip()
+        wait_for_space()
+        break
+    win.flip()
+    
+clock = core.Clock()
+while True:
+    t = clock.getTime()
+    guessor_directions.draw()
+    if t > 5:
+        continue_text.draw()
+        win.flip()
+        wait_for_space()
+        break
+    win.flip()
+
+clock = core.Clock()
+while True:
+    t = clock.getTime()
+    director_directions.draw()
+    if t > 5:
+        continue_text.text = "Please wait for the experimentor to start the task."
+        continue_text.draw()
+        win.flip()
+        wait_for_space()
+        break
+    win.flip()
 
 #looping through blocks
 while block_num < block_count :
